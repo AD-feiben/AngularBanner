@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" ng-app='app'>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>AngularBanner</title>
+  <style>
+    .swiper{
+      width: 50%;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .container{
+      display: flex;
+    }
+
+    .container div{
+      flex: 1;
+    }
+
+    .swiper img{
+      width: 100%;
+    }
+
+  </style>
+</head>
+<body ng-controller='ctrl'>
+  <banner imgs='imgs' time='2000'></banner>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.3/angular.min.js"></script>
+
+<script type="text/javascript">
+  var app = angular.module('app', []);
+
+  app.controller('ctrl', ['$scope', function($scope){
+    $scope.imgs = [{
+            "href": "http://music.163.com/#/topic?id=17482051",
+            "imgUrl": "http://p3.music.126.net/8HaJr_O6jrfs0MnPPI14qQ==/18564154325198749.jpg"
+        },
+        {
+            "href": "http://music.163.com/store/product/detail?id=6172052",
+            "imgUrl": "http://p3.music.126.net/erZfIBSpFVKUtKbAEuFhIw==/18806046883310524.jpg"
+        },
+        {
+            "href": "http://music.163.com/store/concert/detail?concertId=41132",
+            "imgUrl": "http://p3.music.126.net/c4C5EBnl9g5OUde1uAa11w==/18895107323346952.jpg"
+        },
+        {
+            "href": "https://music.163.com/#/activity?id=16768095",
+            "imgUrl": "http://p4.music.126.net/Aa5FZ-OS7khiO3ArGBi9_A==/18770862511222383.jpg"
+        },
+        {
+            "href": "https://music.163.com/#/activity?id=17551057",
+            "imgUrl": "http://p3.music.126.net/kNi1TSKMkiZhkTfwjvbH3A==/18779658604237699.jpg"
+        },
+        {
+            "href": "http://music.163.com/#/mv?id=5452020",
+            "imgUrl": "http://p4.music.126.net/QMe35YOtRWmydMUmCB8YSQ==/18670806953686715.jpg"
+        },
+        {
+            "href": "http://music.163.com/song?id=463840571",
+            "imgUrl": "http://p3.music.126.net/uOy6EUkafAzuq7eKX-QLLg==/18556457743802871.jpg"
+        },
+        {
+            "href": "http://you.163.com/act/pub/HapMsXmKVs.html?from=web_fc_yunyiyue_web",
+            "imgUrl": "http://p3.music.126.net/FkU_1BE2tEf_LthzIy0azA==/18992963858218192.jpg"
+        }
+    ];
+  }]);
+
+  app.directive('banner', function(){
+    return {
+      template: `<div class="swiper">
+                  <div class="container">
+                    <div class="item" ng-repeat="img in imgs">
+                      <img ng-src="{{img.imgUrl}}" >
+                    </div>
+                  </div>
+                </div>`,
+      restrict : 'E',
+      replace: true,
+      scope:{
+        // 轮播图的图片资源
+        imgs: '=',
+        // 轮播的时间
+        time: '='
+      },
+      link: function(scope,iElem,iAttr){
+        var $ = angular.element;
+        var swiper = document.querySelector('.swiper');
+        var width = swiper.offsetWidth;
+        var container = document.querySelector('.container');
+        var containerWidth = width * (scope.imgs.length);
+        container.style.width =  containerWidth + 'px';
+        container.style.transition = 'all linear '+ scope.time/4000+ 's';
+
+        var runBanner = {
+          left: 0,
+          width: width,
+          time: scope.time,
+          maxLeft: containerWidth,
+          timeId: '',
+          run: function(){
+            this.timeId = setTimeout(() => {
+              this.left += this.width;
+              if(this.left === this.maxLeft) this.left = 0;
+              container.style.transform = 'translate(-'+this.left+'px)';
+              this.run();
+            }, this.time);
+          },
+          stop: function(){
+            window.clearTimeout(this.timeId);
+          },
+          click: function(){
+            this.stop();
+          }
+        }
+        runBanner.run();
+      },
+      controller: function ($scope){
+      }
+    }
+  });
+
+</script>
+
+</html>
